@@ -95,7 +95,7 @@ function App() {
     }, 600);
   };
 
-  const handleTurnoverChange = (index: number, field: keyof TurnoverYear, value: any) => {
+  const handleTurnoverChange = (index: number, field: keyof TurnoverYear, value: string) => {
     const newData = [...turnoverData];
     if (field === 'amount') {
       newData[index].amount = parseFloat(value) || 0;
@@ -238,7 +238,7 @@ function App() {
             label="Company Name" 
             placeholder="e.g. Acme Constructions Pvt Ltd"
             value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompanyName(e.target.value)}
             required
             tooltip="The registered legal name of your entity."
           />
@@ -246,7 +246,7 @@ function App() {
             label="Registered Address" 
             placeholder="Full business address"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
             required
             tooltip="The official registered headquarters address."
           />
@@ -314,7 +314,7 @@ function App() {
                     min="0"
                     className="bg-transparent border-b border-cyan-500/30 w-16 text-xl font-bold text-cyan-300 focus:outline-none focus:border-cyan-400 p-0"
                     value={savedData.nValue}
-                    onChange={(e) => updateDashboardNValue(parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateDashboardNValue(parseFloat(e.target.value) || 0)}
                   />
                   <span className="text-sm font-bold text-cyan-300">Years</span>
                 </div>
@@ -415,7 +415,7 @@ function App() {
                     step="0.01"
                     className="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-white w-32 focus:border-cyan-500 outline-none"
                     value={row.amount === 0 ? '0' : (row.amount || '')}
-                    onChange={(e) => handleTurnoverChange(idx, 'amount', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTurnoverChange(idx, 'amount', e.target.value)}
                     placeholder="0.00"
                   />
                 </td>
@@ -423,7 +423,7 @@ function App() {
                   <select
                     className="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-white w-48 focus:border-cyan-500 outline-none"
                     value={row.isNoFactor ? 'NO_FACTOR' : row.updationFactor}
-                    onChange={(e) => handleTurnoverChange(idx, 'updationFactor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleTurnoverChange(idx, 'updationFactor', e.target.value)}
                   >
                     {UPDATION_FACTORS.map((f) => (
                       <option key={f.label} value={f.label === 'No Updation Factor' ? 'NO_FACTOR' : f.value}>
@@ -464,7 +464,7 @@ function App() {
             min="0"
             placeholder="e.g. 2.5"
             value={nValue || ''}
-            onChange={(e) => setNValue(parseFloat(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNValue(parseFloat(e.target.value))}
             className="text-center"
             tooltip="Number of years prescribed for Completion of the works for which current bids are invited."
           />
@@ -506,7 +506,7 @@ function App() {
                 placeholder="Search projects..."
                 className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-300 focus:border-cyan-500 outline-none"
                 value={projectSearchTerm}
-                onChange={(e) => setProjectSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProjectSearchTerm(e.target.value)}
               />
             </div>
             <Button onClick={addProject} className="bg-indigo-600 hover:bg-indigo-500 whitespace-nowrap">
@@ -551,7 +551,7 @@ function App() {
                   <Input 
                     label="Project Name" 
                     value={project.name} 
-                    onChange={(e) => updateProject(project.id, 'name', e.target.value)} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'name', e.target.value)} 
                     placeholder="Enter name"
                     tooltip="The official name of the work/contract."
                   />
@@ -560,7 +560,7 @@ function App() {
                     type="number" 
                     min="0" max="100"
                     value={project.participationPercentage} 
-                    onChange={(e) => updateProject(project.id, 'participationPercentage', parseFloat(e.target.value))} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'participationPercentage', parseFloat(e.target.value))} 
                     error={errors.participationPercentage}
                     tooltip="Your share in the Joint Venture or Consortium. 100% for sole bidder."
                   />
@@ -568,14 +568,14 @@ function App() {
                     label="Start Date" 
                     type="date"
                     value={project.startDate} 
-                    onChange={(e) => updateProject(project.id, 'startDate', e.target.value)} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'startDate', e.target.value)} 
                     tooltip="Date of commencement of the work."
                   />
                   <Input 
                     label="Construction Period (Months)" 
                     type="number"
                     value={project.constructionPeriodMonths} 
-                    onChange={(e) => updateProject(project.id, 'constructionPeriodMonths', parseFloat(e.target.value))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'constructionPeriodMonths', parseFloat(e.target.value))}
                     error={errors.constructionPeriodMonths}
                     tooltip="Total period allowed for completion as per agreement."
                   />
@@ -586,7 +586,7 @@ function App() {
                     label="Contract Value (Cr)" 
                     type="number"
                     value={project.contractValue === 0 ? '0' : (project.contractValue || '')} 
-                    onChange={(e) => updateProject(project.id, 'contractValue', parseFloat(e.target.value))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'contractValue', parseFloat(e.target.value))}
                     error={errors.contractValue}
                     tooltip="Total value of the contract (in Crores)."
                   />
@@ -594,7 +594,7 @@ function App() {
                     label="Work Completed (Cr)" 
                     type="number"
                     value={project.completedValue === 0 ? '0' : (project.completedValue || '')} 
-                    onChange={(e) => updateProject(project.id, 'completedValue', parseFloat(e.target.value))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'completedValue', parseFloat(e.target.value))}
                     error={errors.completedValue}
                     tooltip="Value of work executed/completed till date (in Crores)."
                   />
@@ -622,7 +622,7 @@ function App() {
                     label="Anticipated Completion Date" 
                     type="date"
                     value={project.anticipatedCompletionDate} 
-                    onChange={(e) => updateProject(project.id, 'anticipatedCompletionDate', e.target.value)} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProject(project.id, 'anticipatedCompletionDate', e.target.value)} 
                     required
                     error={errors.anticipatedCompletionDate}
                     tooltip="The likely date of completion. Must be later than the start date."
@@ -661,7 +661,7 @@ function App() {
             min="0"
             placeholder="0.00"
             value={cValue === 0 ? '0' : (cValue || '')}
-            onChange={(e) => setCValue(parseFloat(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCValue(parseFloat(e.target.value))}
             className="text-center"
             tooltip="Amount of bonus received in EPC projects during last 5 years (updated to current price level)."
           />
