@@ -11,7 +11,9 @@ import {
   TrendingUp,
   Info,
   Edit3,
-  HelpCircle // Imported but used in Input component mostly, good to have for icons
+  HelpCircle,
+  Search,
+  FileText
 } from 'lucide-react';
 import { 
   AppView, 
@@ -46,6 +48,7 @@ function App() {
   const [view, setView] = useState<AppView>('ONBOARDING');
   const [calcStep, setCalcStep] = useState<CalculatorStep>('TURNOVER');
   const [isLoading, setIsLoading] = useState(false);
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
   
   // Data State
   const [companyName, setCompanyName] = useState('');
@@ -109,6 +112,7 @@ function App() {
   };
 
   const addProject = () => {
+    setProjectSearchTerm(''); // Clear filter to show new project
     const newProject: Project = {
       id: crypto.randomUUID(),
       name: '',
@@ -133,6 +137,25 @@ function App() {
       }
       return p;
     }));
+  };
+
+  const saveDraft = () => {
+    setIsLoading(true);
+    const data: CompanyData = {
+      companyName,
+      registeredAddress: address,
+      turnoverData,
+      nValue,
+      projects,
+      cValue,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    setTimeout(() => {
+      localStorage.setItem('nexus_bid_data', JSON.stringify(data));
+      setSavedData(data); // Also update live data state
+      setIsLoading(false);
+    }, 500);
   };
 
   const saveData = () => {
@@ -463,17 +486,33 @@ function App() {
 
   const renderStepProjects = () => {
     const totalB = calculateB(projects, nValue);
+    
+    const filteredProjects = projects.filter(p => 
+      p.name.toLowerCase().includes(projectSearchTerm.toLowerCase())
+    );
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex justify-between items-end mb-4">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-4">
           <div>
             <h3 className="text-xl font-semibold">Ongoing Commitments</h3>
             <p className="text-sm text-slate-400 mt-1">Add all ongoing project works to calculate Value B.</p>
           </div>
-          <Button onClick={addProject} className="bg-indigo-600 hover:bg-indigo-500">
-            <Plus className="w-4 h-4" /> Add Project
-          </Button>
+          <div className="flex gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search projects..."
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-300 focus:border-cyan-500 outline-none"
+                value={projectSearchTerm}
+                onChange={(e) => setProjectSearchTerm(e.target.value)}
+              />
+            </div>
+            <Button onClick={addProject} className="bg-indigo-600 hover:bg-indigo-500 whitespace-nowrap">
+              <Plus className="w-4 h-4" /> Add Project
+            </Button>
+          </div>
         </div>
 
         {projects.length === 0 ? (
@@ -482,9 +521,14 @@ function App() {
             <p className="text-slate-400">No projects added yet.</p>
             <Button variant="ghost" onClick={addProject} className="mt-2 text-cyan-400">Add your first project</Button>
           </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="text-center py-12 border border-slate-700 rounded-2xl bg-slate-800/20">
+            <p className="text-slate-400">No projects match "{projectSearchTerm}"</p>
+            <Button variant="ghost" onClick={() => setProjectSearchTerm('')} className="mt-2 text-cyan-400">Clear Search</Button>
+          </div>
         ) : (
           <div className="space-y-4">
-            {projects.map((project, idx) => {
+            {filteredProjects.map((project, idx) => {
               const effectiveBalance = calculateEffectiveBalance(project, nValue);
               const adjustedBalance = calculateAdjustedBalance(project.participationPercentage, effectiveBalance);
               const errors = getProjectErrors(project);
@@ -499,7 +543,7 @@ function App() {
                 </button>
                 
                 <h4 className="font-medium text-slate-300 mb-4 border-b border-slate-700 pb-2 flex items-center gap-2">
-                  Project #{idx + 1}
+                  Project {project.name ? `- ${project.name}` : ''}
                   {Object.keys(errors).length > 0 && <span className="text-xs text-red-400 bg-red-900/20 px-2 py-0.5 rounded">Action Required</span>}
                 </h4>
                 
@@ -692,14 +736,19 @@ function App() {
 
     return (
       <div className="max-w-5xl mx-auto p-6 pt-12 min-h-screen flex flex-col">
-         <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" onClick={() => view === 'DASHBOARD' || savedData ? setView('DASHBOARD') : null} disabled={!savedData} className="!p-2">
-               <ArrowLeft className="w-6 h-6" />
-            </Button>
-            <div>
-               <h1 className="text-2xl font-bold">Capacity Calculator</h1>
-               <p className="text-slate-400 text-sm">Complete the steps below</p>
-            </div>
+         <div className="flex justify-between items-center mb-8">
+           <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => view === 'DASHBOARD' || savedData ? setView('DASHBOARD') : null} disabled={!savedData} className="!p-2">
+                 <ArrowLeft className="w-6 h-6" />
+              </Button>
+              <div>
+                 <h1 className="text-2xl font-bold">Capacity Calculator</h1>
+                 <p className="text-slate-400 text-sm">Complete the steps below</p>
+              </div>
+           </div>
+           <Button variant="secondary" onClick={saveDraft} className="gap-2 text-sm">
+             <FileText className="w-4 h-4" /> Save Draft
+           </Button>
          </div>
 
          <StepWizard currentStep={calcStep} steps={steps} />
